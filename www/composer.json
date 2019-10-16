@@ -1,0 +1,20 @@
+{
+    "name": "vendor/guestbook-kl",
+    "description": "Descripton of guestbook.kl",
+    "authors": [
+        {
+            "name": "Slava",
+            "email": "ProSlavon86@gmail.com"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "app\\": "app/",
+            "app\\controllers\\": "app/controllers/",
+            "app\\core\\": "app/core/",
+            "app\\models\\": "app/models/",
+            "app\\views\\": "app/views/"
+        }
+    }
+}

@@ -1,0 +1,298 @@
+<?php
+/**
+ * Файл базовой модели
+ * 
+ * @author Slava V.V. <ProSlavon86@gmail.com>
+ * @copyright (c) 2019, Slava V.V.
+ * @version 1.0
+ * @package Core
+ */
+
+namespace app\core;
+
+/**
+ * Базовая модель
+ */
+class BaseModels {
+   
+    /**
+     * Переменная хранит подключение к БД 
+     * @var PDO 
+     */
+    public static $sql;
+    
+    /**
+     * Результат обращения к БД
+     * @var mixed 
+     */
+    public static $result = null;
+    
+    /**
+     * Значение последней записи в БД
+     * @var integer 
+     */
+    public static $lastInser = 0;
+    
+    /**
+     * Конструктор модели
+     * @global PDO $sql
+     * @name $sql
+     */
+    public function __construct() {
+        global $sql;
+        self::$sql = $sql;
+    }
+    
+    /**
+     * Получение последней записи в БД
+     * @return integer
+     */
+    public static function getLastId(){
+        return self::$sql->lastInsertId();
+    }
+    
+    /**
+     * Подготовка к запросу в БД
+     * 
+     * @param string $sql_text Текст SQL
+     * @param array $data Массив данных для выполнения подготовленного запроса
+     * @param string $type Как получить данные. Может принемать all,value,row,column @see getSql
+     * @return mixed Результат. Возвращает bool или array
+     */
+    private static function sqlPrepare($sql_text,$data,$type=''){
+        if($sql_text == ''){
+            return false;
+        }
+        if(!is_array($data)){
+            return false;
+        }
+        self::$result = self::$sql->prepare($sql_text);
+        if($type != ''){
+            self::$result->execute($data);
+            return self::getSql($type);
+        } else return self::$result->execute($data);
+    }
+    
+    /**
+     * Получение данных из запроса в БД
+     * @param string $type Как получить данные. all - все, value - одно значение, row - одна строка, column - столбец
+     * @return mixed Результат. bool или array,integer,string
+     */
+    private static function getSql($type){
+        if($type != ''){
+            switch ($type){
+                case 'all':
+                    return self::$result->fetchAll(\PDO::FETCH_ASSOC);
+                    break;
+                case 'value':
+                    $default = null;
+                    $result = self::getSql('row');
+                    if (!empty($result)) {
+                        $result = array_shift($result);
+                    }
+                    return (empty($result)) ? $default : $result; 
+                    break;
+                case 'row':
+                    return self::$result->fetch(\PDO::FETCH_ASSOC);
+                    break;
+                case 'column':
+                    return self::$result->fetchAll(\PDO::FETCH_COLUMN);
+                    break;
+                default : 
+                    return self::$result->fetchAll(\PDO::FETCH_ASSOC); 
+                    break;
+            }
+        } else return false;
+    }
+    
+    /**
+     * Запрос на получение данных из БД
+     * 
+     * @param string $sql_text Текст SQL
+     * @param array $data Массив данных для выполнения подготовленного запроса
+     * @param string $type Как получить данные. Может принемать all,value,row,column @see getSql
+     * @return mixed Результат. Возвращает bool или array. @see sqlPrepare
+     */
+    public static function sqlSelect($sql_text,$data,$type){
+        return self::sqlPrepare($sql_text, $data,$type);
+    }
+    
+    /**
+     * Запрос на запись данных в БД
+     * 
+     * @param string $sql_text Текст SQL
+     * @param array $data Массив данных для выполнения подготовленного запроса
+     * @param string $type Как получить данные. Может принемать all,value,row,column @see getSql
+     * @return mixed Результат. Возвращает bool или array. @see sqlPrepare
+     */
+    public static function sqlInsert($sql_text,$data){
+        return self::sqlPrepare($sql_text, $data);
+    }
+    
+    /**
+     * Запрос на удаление данных в БД
+     * 
+     * @param string $sql_text Текст SQL
+     * @param array $data Массив данных для выполнения подготовленного запроса
+     * @param string $type Как получить данные. Может принемать all,value,row,column @see getSql
+     * @return mixed Результат. Возвращает bool или array. @see sqlPrepare
+     */
+    public static function sqlDelete($sql_text,$data){
+        return self::sqlPrepare($sql_text, $data);
+    }
+    
+    /**
+     * Запрос на обновление данных в БД
+     * 
+     * @param string $sql_text Текст SQL
+     * @param array $data Массив данных для выполнения подготовленного запроса
+     * @param string $type Как получить данные. Может принемать all,value,row,column @see getSql
+     * @return mixed Результат. Возвращает bool или array. @see sqlPrepare
+     */
+    public static function sqlUpdate($sql_text,$data){
+        return self::sqlPrepare($sql_text, $data);
+    }
+
+    /**
+     * Удаление нежелательных символов из строки
+     * 
+     * @param string $string Строка для удаления нежелательных символов
+     * @return string
+     */
+    public static function escapeSpecialCharacters($string){
+        //$string = trim($string);
+        //$string = stripcslashes($string);
+        //$string = htmlspecialchars($string);
+        //return $string;
+        return htmlspecialchars(stripcslashes(trim($string)));
+    }   
+    
+    /**
+     * Валидация данных
+     * 
+     * Валидация данных, переопределяется у потомков
+     * 
+     * @param array $data
+     */
+    public function isValidateData($data){
+        
+    }
+    
+    /**
+     * Валидация email
+     * 
+     * Валидация email адреса по регулярному выражению. Русские символы так же поддерживаются
+     * 
+     * @param string $email
+     * @return boolean
+     */
+    public function isValidEmail($email){
+        $isValid = true;
+        if(!preg_match('/^[A-Za-z0-9\x{0430}-\x{044F}\x{0410}-\x{042F}\._-]+@([A-Za-z0-9\x{0430}-\x{044F}\x{0410}-\x{042F}]{1,2}|[A-Za-z0-9\x{0430}-\x{044F}\x{0410}-\x{042F}]((?<!(\.\.))[A-Za-z0-9\x{0430}-\x{044F}\x{0410}-\x{042F}.-])+[A-Za-z0-9\x{0430}-\x{044F}\x{0410}-\x{042F}])\.[A-Za-z\x{0430}-\x{044F}\x{0410}-\x{042F}]{2,}/ium', self::escapeSpecialCharacters($email))){
+            $isValid = false;
+        }
+        return $isValid;
+    }
+    
+    /**
+     * Получение длины строки
+     * 
+     * Получение длины строки в зависимости от символов
+     * 
+     * @param string $string Строка, у которой определяется размер
+     * @param string $type Тип. Не обязательный параметр, если русские символы
+     * @param string $encoding Кодировка строки. Не обязательный параметр, если русские символы
+     * @return integer
+     */
+    public function getLenghtString($string,$type='lat',$encoding='UTF-8'){
+        $len = 0;
+        if($type == 'lat'){
+            $len = strlen(self::escapeSpecialCharacters($string));
+        } else {
+            $len = mb_strlen(self::escapeSpecialCharacters($string));
+        }
+        return $len;
+    }
+    
+    /**
+     * Создать массив данных запроса для SQL запроса
+     * 
+     * Получение созданного массива  для подготовленного запроса
+     * 
+     * @param array $data Данных от пользователя
+     * @return string Строка запроса
+     */
+    public function createDataSql($data){
+        $res = array();
+        foreach ($data as $k => $v) {
+            if(is_numeric($v)){
+                $res[':'.$k] = intval($v);
+            } else {
+                $res[':'.$k] = $this->escapeSpecialCharacters($v);
+            }
+        }
+        return $res;
+    }
+    
+    /**
+     * Создание строки запроса
+     * 
+     * Получение и создание строки запроса SQL для подготовленного запроса.
+     * Можно создать
+     * SELECT
+     * INSERT
+     * UPDATE
+     * WHERE
+     * LIMIT
+     * В строке необходимо заменить #table# на имя необходимой таблицы
+     * 
+     * @param array $keys Ключи данных, которые будут вставляться в подготовленный запрос
+     * @param string $type Тип строки. Возможная строка: SELECT,INSERT,UPDATE,WHERE,LIMIT
+     * @return array Массив данных для подготовленного запроса. Может быть arra('id' => ':id')
+     */
+    public function createSqlText($keys,$type='SELECT'){
+       $sql_text = '';
+        switch ($type) {
+            case 'SELECT':
+                $sql_text = 'SELECT ';
+                foreach ($keys as $k) {
+                    $sql_text .= $k.', ';
+                }
+                break;
+            case 'UPDATE':
+                $sql_text = 'UPDATE #table# SET ';
+                foreach ($keys as $k) {
+                    $sql_text .= $k.' = :'.$k.', ';
+                }
+                break;
+            case 'INSERT':
+                $sql_text = 'INSERT INTO #table# ';
+                $sql_vars = '';
+                $sql_values = '';
+                foreach ($keys as $k) {
+                    $sql_vars .= $k.', ';
+                    $sql_values .= ':'.$k.', ';
+                }
+                $sql_text .= '('.(substr(trim($sql_vars), 0,-1)).') VALUES ('.(substr(trim($sql_values), 0,-1)).')';
+                break;
+            case 'WHERE':
+                $sql_text = 'WHERE ';
+                foreach ($keys as $k) {
+                    $sql_text .= $k.' = :'.$k.', ';
+                }
+                break;
+            case 'LIMIT':
+                $sql_text = 'LIMIT :'.$keys[0].',:'.$keys[1];
+                break;
+        }
+        $sql_text = trim($sql_text);
+        if ($sql_text{strlen($sql_text)-1} == ',') {
+            $sql_text = substr($sql_text,0,-1);
+        }
+        if($type === 'SELECT'){
+            $sql_text .= ' FROM #table#';
+        }
+        return $sql_text;
+    }   
+}
+

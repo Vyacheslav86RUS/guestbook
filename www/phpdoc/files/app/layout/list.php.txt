@@ -1,0 +1,11 @@
+<?php
+            $result = '<br><div class="table-responsive">';
+                         for ($i = 0; $i < count($data); $i++) {
+                            $result .= '<table class="table table-hover"><tbody><tr><td><b>From:</b><br><b>URL:</b><br><b>Date:</b></td>';
+                            $result .= '<td width="100%">'.$data[$i]['name'].' | <a href="'.$data[$i]['email'].'">'.$data[$i]['email'].'</a><br><a href="'.$data[$i]['hpage'].'">'.$data[$i]['hpage'].'</a><br>'.date('d.m.Y h:i:s', $data[$i]['cdate']).'</td></tr>'; 
+                            $result .= '<tr><td colspan="2">'.$data[$i]['gmsg'].'</td></tr></tbody></table><br>';
+                         }
+                $result .= '</div>';
+                echo $result;
+
+

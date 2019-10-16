@@ -1,0 +1,60 @@
+<?php
+/**
+ * Файл контроллер гостевой книги
+ * 
+ * @author Slava V.V. <ProSlavon86@gmail.com>
+ * @copyright (c) 2019, Slava V.V.
+ * @version 1.0
+ * @package Controllers
+ */
+
+
+namespace app\controllers;
+
+
+use app\core\BaseControllers;
+use app\models\GuestModel;
+
+/**
+ * Контроллер гостевой книги
+ * 
+ */
+class GuestController extends BaseControllers {
+    
+    /**
+     * Конструктор гостевой книги
+     * 
+     * Вызывает базовый __construct() контроллера и туда передается модель пользователей
+     */
+    public function __construct() {
+        $model = new GuestModel();
+        parent::__construct($model);
+    }
+    
+    /**
+     * Список сообщений гостевой книги
+     * 
+     * Получение записей гостевой книги и подгружается вид
+     */
+    public function listAction(){
+        $this->view->title = 'Главная';
+        $data = $this->model->getGuest('all',array('start'=>0,'end'=>PAGE_COUNT));
+       // $data['start'] = $page;
+       // $data['end'] = PAGE_COUNT;
+       // $data['count'] = $data = $this->model->getGuest('count');
+        $this->view->render('guest.php','main.php',$data);
+    }
+    
+    /**
+     * Количество записей
+     * 
+     * Тестовый экшн
+     */
+    public function countAction(){
+        //$this->view->title = 'Главная';
+        $data = $this->model->getGuest('count');
+        //$this->view->render('guest.php','main.php',$data);
+        print_r($data);
+    }
+}
+

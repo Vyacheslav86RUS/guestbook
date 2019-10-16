@@ -1,0 +1,79 @@
+<?php
+
+namespace app\controllers;
+
+use app\core\BaseControllers;
+use app\models\MainModel;
+
+class MainController extends BaseControllers {
+    
+    public function __construct() {
+        $model = new MainModel();
+        parent::__construct($model);
+    }
+    
+    public function indexAction(){
+        //include 'app/layout/main.php';
+        //$model = new MainModel();
+        //$sql = 'INSERT INTO users (login,password,email,dreg,role) VALUES (:login,:password,:email,:dreg,:role)';
+        //$data = array(':login'=>'slava',':password'=> md5('slava'),':email'=>'slava@gmail.com',':dreg'=>time(),':role'=>1);
+        //$r = $model::sqlInsert($sql, $data);
+        //$r = $model::getLastId();
+                
+        //$sql = 'UPDATE users SET role = :role WHERE id = :id';
+        //$data = array(':role'=>1,':id'=>1);
+        //$r = $model::sqlUpdate($sql,$data);
+        
+        //$sql = 'SELECT login FROM users WHERE role=:role';
+        //$data = array(':role'=>1);
+        //$r1 = $model::sqlSelect($sql, $data, 'all');
+        //$r2 = $model::sqlSelect($sql, $data, 'row');
+        //$r3 = $model::sqlSelect($sql, $data, 'column');
+        //$r4 = $model::sqlSelect($sql, $data, 'value');
+        
+        //$sql = 'DELETE FROM users WHERE id = :id';
+        //$data = array(':id'=>3);
+        //$r = $model::sqlDelete($sql, $data);
+        
+        
+        $this->view->title = 'Вход';
+        $this->view->render('login.php');
+    }
+    public function regAction(){
+        $this->title = 'Регистрация';
+        $this->view->render('registration.php');
+    }
+    
+    public function loginAction(){
+        $this->view->title = 'Вход';
+        $this->view->render('login.php');
+    }
+    
+    public function authAction(){
+        $result = array();
+        if(isset($_POST)){
+            $result = $this->model->authUser($_POST);
+        } else $result = array('msg'=>'Нет данных, перезагрузите страницу и попробуйте снова','error'=>1);
+        echo json_encode($result);
+    }
+    
+    public function registrationAction(){
+        
+    }
+    
+    public function testAction(){
+        $this->view->title = 'Главная';
+        $this->view->render('404.php');
+    }
+    public function guestAction(){
+        $this->view->title = 'Главная';
+        $data = $this->model->getGuest('all',array('start'=>0,'end'=>PAGE_COUNT));
+        $this->view->render('guest.php','main.php',$data);
+    }
+    
+    public function errorAction(){
+        $this->view->title = 'Ошибка';
+        $this->view->render('404.php');
+    }
+}
+

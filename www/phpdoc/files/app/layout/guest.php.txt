@@ -1,0 +1,77 @@
+<div class="container">
+    <div class="row">
+        <h2>Гостевая книга</h2>
+        <div class="result">
+            <?php
+            /*$data = array(
+                            array('login'=>'admin','email'=>'admin@admin.com','hpage'=>'localhost','cdate'=>'06.06.2019','gtext'=>'Добрый день'),
+                            array('login'=>'user1','email'=>'user1@user1.com','hpage'=>'localhost','cdate'=>'06.06.2019','gtext'=>'Большинство разработчиков которые используют AJAX в процедурном PHP знают как работать с AJAX , но в MVC любой с вариантов приведет к тому что у вас повторно от рисуется вся страница в том месте где вы будете выводить результат. И тут возникает куча вопросов у новичков.
+Но хотя если подумать, то даже в процедурном подходе, при запросе AJAX делается направление ПОСТ данных на файл который специально был подготовлен для обработки данных. MVC подход не исключение. Для обработки данных AJAX в MVC паттерне, нужно также создать отдельный контроллер AJAX, я назвал его ajaxController.php отдельно создал ajaxModel.php и самое интересное что для данной связки нужно создать вьюшку, но в файле вьюшка можно просто написать одну маленькую строчку просто блок див, а можно ничего не писать, все зависит от вашей реализации. 
+Ну и получается что когда вы отправляете запрос со страницы которая была от рисована ранее в браузере, первым обработчиком выступает jQuery AJAX я использовал библиотеку jQuery, так как можно использовать уже готовые решения, а не придумывать велосипед. '),
+                            array('login'=>'user2','email'=>'user2@user2.com','hpage'=>'localhost','cdate'=>'06.06.2019','gtext'=>'Вам сейчас кажется, что все это ерунда и можно было сделать все это проще. Но если вдуматься, у нашего фреймворка огромные возможности. Он полностью структурирован. Расширить его возможности не составит большого труда. Добавляем класс для работы с БД и класс для работы с шаблонами и вот у нас полноценный фреймоворк. Самое важное, что вы поймете написав такой велосипед, это принцип работы MVC фреймворков таких как Zend или Yii. А понимание принципов работы это 99% процентов успеха в любой разработке.'),
+                            array('login'=>'user3','email'=>'user3@user3.com','hpage'=>'localhost','cdate'=>'06.06.2019','gtext'=>'Добрый день'),
+                            array('login'=>'user4','email'=>'user4@user4.com','hpage'=>'localhost','cdate'=>'06.06.2019','gtext'=>'Добрый день'),
+                         );*/
+            /*$result = '<br><div class="table-responsive">';
+                         for ($i = 0; $i < count($data); $i++) {
+                            $result .= '<table class="table table-hover"><tbody><tr><td><b>From:</b><br><b>URL:</b><br><b>Date:</b></td>';
+                            $result .= '<td width="100%">'.$data[$i]['name'].' | <a href="'.$data[$i]['email'].'">'.$data[$i]['email'].'</a><br><a href="'.$data[$i]['hpage'].'">'.$data[$i]['hpage'].'</a><br>'.date('d.m.Y h:i:s', $data[$i]['cdate']).'</td></tr>'; 
+                            $result .= '<tr><td colspan="2">'.$data[$i]['gmsg'].'</td></tr></tbody></table><br>';
+                         }
+                $result .= '</div>';
+                echo $result;*/
+            //var_dump($data);
+            include 'list.php';
+            ?>
+        </div>
+        <div id="alert" class="8"></div>
+        <form id="MyForm" class="form-horizontal" enctype="multipart/form-data" method="POST">
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="uname"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Name:<b style="color: red;font-size: 18px">*</b></font></font></label>
+                <div class="col-sm-8 has-feedback">
+                    <input type="text" class="form-control" id="uname" name="uname" placeholder="Enter name">
+                    <span class='glyphicon form-control-feedback'></span>
+                    <em class='help-block'></em>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="inputEmail"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Email:<b style="color: red;font-size: 18px">*</b></font></font></label>
+                <div class="col-sm-8 has-feedback">
+                    <input type="text" class="form-control" id="inputEmail" name="inputEmail" placeholder="Enter email">
+                    <span class='glyphicon form-control-feedback'></span>
+                    <em class='help-block'></em>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="inputURL"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">URL:</font></font></label>
+                <div class="col-sm-8 has-feedback">
+                    <input type="text" class="form-control" id="inputURL" name="inputURL" placeholder="Enter url">
+                    <span class='glyphicon form-control-feedback'></span>
+                    <em class='help-block'></em>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="msg"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Message:<b style="color: red;font-size: 18px">*</b></font></font></label>
+                <div class="col-sm-8 has-feedback">
+                    <textarea class="form-control" id="msg" name="msg" placeholder="Enter messages" rows="5"></textarea>
+                    <span class='glyphicon form-control-feedback'></span>
+                    <em class='help-block'></em>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="MyFile"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">File:</font></font></label>
+                <div class="col-sm-8 has-feedback">
+                    <input type="file" class="form-control" id="MyFile" name="MyFile" accept="text/plain, image/png, image/gif, image/jpeg">
+                    <span class='glyphicon form-control-feedback'></span>
+                    <em class='help-block'></em>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-8 col-sm-offset-4">
+                    <button type="button" class="btn btn-primary" id="MySend">Добавить запись</button>
+                    <button type="reset" class="btn btn-default" >Очистить форму</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

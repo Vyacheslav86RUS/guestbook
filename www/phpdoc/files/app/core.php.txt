@@ -1,0 +1,56 @@
+<?php
+/**
+ * Файл для обработки ajax запросов
+ * 
+ * @author Slava V.V. <ProSlavon86@gmail.com>
+ * @copyright (c) 2019, Slava V.V.
+ * @version 1.0
+ * @package App
+ */
+
+include 'confing.php';
+include '../vendor/autoload.php';
+
+//use app\core\BaseModels;
+//use app\models\MainModel;
+use app\models\UserModel;
+use app\models\GuestModel;
+
+$result = array();
+$sql = new PDO('mysql:host=' . DB_HOST . ';dbname=' . DB_NAME, DB_USER, DB_PASS);
+$sql->exec('SET CHARACTER SET utf8');
+//$model = new MainModel();
+
+switch ($_GET['id']){
+    case 'auth':
+        $model = new UserModel();
+        if(isset($_POST)){
+            $result = $model->authUser($_POST);
+        } else $result = array('msg'=>'Нет данных, перезагрузите страницу и попробуйте снова','error'=>1);
+        break;
+    case 'reg':
+        $model = new UserModel();
+        if(isset($_POST)){
+            //$result['error'] = 1;
+            //$result['data'] = $_POST;
+            $result = $model->regUser($_POST);
+        } else $result = array('msg'=>'Нет данных, перезагрузите страницу и попробуйте снова','error'=>1);   
+        break;
+    case 'gsadd':
+        $model = new GuestModel();
+        if(isset($_POST)){
+            $result = $model->addGuest($_POST, $_FILES['file']);
+            //$result = array('p'=>$_POST,'f'=>$_FILES);
+        } else {
+            $result = array('msg'=>'Нет данных, перезагрузите страницу и попробуйте снова','error'=>1);
+        }
+        //$result['response'] = $_POST;
+        //$result['error'] = 0;
+        //$result['file'] = $model->checkFile($_FILES['file']);
+        break;
+    case 'test':
+        $result = $_POST;
+        break;
+}
+
+print json_encode($result);

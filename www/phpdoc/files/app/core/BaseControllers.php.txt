@@ -1,0 +1,62 @@
+<?php
+/**
+ * Файл базового контроллера
+ * 
+ * @author Slava V.V. <ProSlavon86@gmail.com>
+ * @copyright (c) 2019, Slava V.V.
+ * @version 1.0
+ * @package Core
+ */
+
+namespace app\core;
+
+use app\views\View;
+
+/**
+ * Базовый контроллер
+ * @abstract
+ */
+abstract class BaseControllers {
+    
+    /**
+     * Вид для контроллеров
+     * @var View  
+     */
+    public $view;
+    
+    /**
+     * Модели для контроллеров
+     * @var Model 
+     */
+    public $model;
+    
+    /**
+     * Конструктор базового класса
+     * @param Model $model
+     * @param View $view
+     */
+    public function __construct($model,$view='View') {
+        //$this->view = new View();
+        //$this->model = new MainModel();
+        $this->setModel($model);
+        $this->setView($view);
+    }
+    
+    /**
+     * Установка модели для контроллеров
+     * @param Model $model
+     */
+    private function setModel($model){
+        $this->model = new $model();
+    }
+
+    /**
+     * У потомков должен быть метод index
+     * 
+     * В потомках можно переопределить метод
+     */
+    public function indexAction(){
+        
+    }
+}
+

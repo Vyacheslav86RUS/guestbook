@@ -1,0 +1,21 @@
+<?php
+/**
+ * Файл модели ошибок
+ * 
+ * @author Slava V.V. <ProSlavon86@gmail.com>
+ * @copyright (c) 2019, Slava V.V.
+ * @version 1.0
+ * @package Models
+ */
+
+namespace app\models;
+
+use app\core\BaseModels;
+
+/**
+ * Модель ошибок
+ */
+class ErrorModel extends BaseModels {
+    //put your code here
+}
+
